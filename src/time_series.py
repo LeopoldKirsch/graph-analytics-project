@@ -98,22 +98,62 @@ PANELS = [
     ("edges", "Routes (edges)", "{:.0f}"),
     ("passengers_m", "Published passengers (millions)", "{:.0f}"),
     ("cdg_betweenness", "CDG betweenness centrality", "{:.2f}"),
-    ("cdg_passenger_share", "Share of passengers on CDG routes", "{:.0%}"),
+    # two series, same unit: one axis, legend + direct end labels
+    ([("paris_passenger_share", "Paris (CDG + Orly)"),
+      ("cdg_passenger_share", "CDG")],
+     "Share of published passengers on Paris routes", "{:.0%}"),
     ("components_without_cdg", "Components after removing CDG", "{:.0f}"),
     ("edge_jaccard", "Routes kept vs previous year (Jaccard)", "{:.2f}"),
 ]
 INK = "#0b0b0b"
 INK_2 = "#52514e"
 SERIES = "#2a78d6"
+SERIES_2 = "#eb6834"
 GRID = "#e4e3df"
 EVENTS = {2001: "9/11", 2008: "2008 crisis", 2020: "COVID"}
+
+
+def _marker(ax, x, y, color):
+    ax.plot(x, y, "o", color=color, markersize=5,
+            markeredgecolor="white", markeredgewidth=1.5)
+
+
+def _plot_single(ax, s: pd.Series, fmt: str) -> None:
+    ax.plot(s.index, s.values, color=SERIES, linewidth=2)
+    # direct labels on the years the report compares: 2019 (left of its
+    # point), 2020 and the last year (right of theirs)
+    for year, dx, ha in ((2019, -6, "right"), (2020, 6, "left"),
+                         (s.index.max(), 0, "center")):
+        if year in s.index:
+            _marker(ax, year, s[year], SERIES)
+            ax.annotate(fmt.format(s[year]), (year, s[year]),
+                        textcoords="offset points", xytext=(dx, 7),
+                        ha=ha, fontsize=8, color=INK)
+
+
+def _plot_multi(ax, df: pd.DataFrame, cols, fmt: str) -> None:
+    # several series sharing one unit: legend, plus the last value labelled
+    # with the series name so identity never rests on colour alone
+    for (col, name), color in zip(cols, (SERIES, SERIES_2)):
+        s = df[col].dropna()
+        ax.plot(s.index, s.values, color=color, linewidth=2, label=name)
+        last = s.index.max()
+        _marker(ax, last, s[last], color)
+        ax.annotate(f"{name.split(' ')[0]} {fmt.format(s[last])}",
+                    (last, s[last]), textcoords="offset points",
+                    xytext=(0, 7), ha="right", fontsize=8, color=INK)
+    # placed in the empty band between the two lines (early 1990s)
+    ax.legend(loc="center left", bbox_to_anchor=(0, 0.68), fontsize=8,
+              frameon=False, labelcolor=INK)
 
 
 def plot(df: pd.DataFrame, path: Path) -> None:
     fig, axes = plt.subplots(3, 2, figsize=(10, 9), sharex=True)
     for ax, (col, title, fmt) in zip(axes.flat, PANELS):
-        s = df[col].dropna()
-        ax.plot(s.index, s.values, color=SERIES, linewidth=2)
+        if isinstance(col, list):
+            _plot_multi(ax, df, col, fmt)
+        else:
+            _plot_single(ax, df[col].dropna(), fmt)
         ax.set_title(title, loc="left", fontsize=10.5, color=INK)
         ax.grid(axis="y", color=GRID, linewidth=0.8)
         ax.set_axisbelow(True)
@@ -127,16 +167,6 @@ def plot(df: pd.DataFrame, path: Path) -> None:
         )
         for year in EVENTS:
             ax.axvline(year, color=INK_2, linewidth=0.8, linestyle=":")
-        # direct labels on the years the report compares: 2019 (left of its
-        # point), 2020 and the last year (right of theirs)
-        for year, dx, ha in ((2019, -6, "right"), (2020, 6, "left"),
-                             (s.index.max(), 0, "center")):
-            if year in s.index:
-                ax.plot(year, s[year], "o", color=SERIES, markersize=5,
-                        markeredgecolor="white", markeredgewidth=1.5)
-                ax.annotate(fmt.format(s[year]), (year, s[year]),
-                            textcoords="offset points", xytext=(dx, 7),
-                            ha=ha, fontsize=8, color=INK)
     for year, label in EVENTS.items():
         axes[-1, 0].annotate(label, (year, 0), xycoords=("data", "axes fraction"),
                              xytext=(3, 4), textcoords="offset points",
