@@ -1,0 +1,9 @@
+year,variant,nodes,edges,density,components,communities,community_sizes,largest_community_share,modularity,largest_community
+2019,"shared, with Paris",14,50,0.549,2,3,"[11, 2, 1]",0.79,0.006,"['FMEE', 'LFBD', 'LFBO', 'LFLL', 'LFLS', 'LFML', 'LFMN', 'LFPG', 'LFPO', 'LFRS', 'LFSB']"
+2019,"shared, without Paris",12,31,0.47,3,4,"[8, 2, 1, 1]",0.67,0.011,"['LFBD', 'LFBO', 'LFLL', 'LFLS', 'LFML', 'LFMN', 'LFRS', 'LFSB']"
+2019,"jaccard, with Paris",14,50,0.549,2,3,"[11, 2, 1]",0.79,0.167,"['FMEE', 'LFBD', 'LFBO', 'LFLL', 'LFLS', 'LFML', 'LFMN', 'LFPG', 'LFPO', 'LFRS', 'LFSB']"
+2019,"jaccard, without Paris",12,31,0.47,3,4,"[8, 2, 1, 1]",0.67,0.217,"['LFBD', 'LFBO', 'LFLL', 'LFLS', 'LFML', 'LFMN', 'LFRS', 'LFSB']"
+2025,"shared, with Paris",21,68,0.324,4,5,"[16, 2, 1, 1, 1]",0.76,0.006,"['FMEE', 'LFBD', 'LFBO', 'LFLB', 'LFLL', 'LFLS', 'LFML', 'LFMN', 'LFPG', 'LFPO', 'LFQQ', 'LFRS', 'LFSB', 'LFST', 'NTAA', 'TFFR']"
+2025,"shared, without Paris",19,44,0.257,6,8,"[10, 2, 2, 1, 1, 1, 1, 1]",0.53,0.021,"['LFBD', 'LFBO', 'LFLL', 'LFML', 'LFMN', 'LFQQ', 'LFRS', 'LFSB', 'LFST', 'TFFR']"
+2025,"jaccard, with Paris",21,68,0.324,4,6,"[14, 2, 2, 1, 1, 1]",0.67,0.211,"['FMEE', 'LFBD', 'LFBO', 'LFLL', 'LFML', 'LFMN', 'LFPG', 'LFPO', 'LFQQ', 'LFRS', 'LFSB', 'LFST', 'NTAA', 'TFFR']"
+2025,"jaccard, without Paris",19,44,0.257,6,8,"[10, 2, 2, 1, 1, 1, 1, 1]",0.53,0.264,"['LFBD', 'LFBO', 'LFLL', 'LFML', 'LFMN', 'LFQQ', 'LFRS', 'LFSB', 'LFST', 'TFFR']"
