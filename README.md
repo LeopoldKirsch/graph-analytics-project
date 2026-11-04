@@ -58,6 +58,47 @@ jupyter notebook notebooks/analysis.ipynb
 
 Requires Python 3.10+, pandas and NetworkX. Community detection uses Louvain (`networkx.community.louvain_communities`) with `seed=42` for reproducibility.
 
+## Team workflow
+
+**One branch per task, one pull request per branch, reviewed by the other teammate.**
+
+1. Start from an up-to-date `main`:
+   ```bash
+   git switch main && git pull
+   git switch <task-branch>        # or: git switch -c <type>/<name> for a new task
+   git merge main                  # if the branch already exists, bring it up to date
+   ```
+2. Work in small commits with clear messages ("Add weighted betweenness", not "update").
+3. Push and open a pull request into `main` on GitHub.
+4. **Peer review**: the other teammate reviews before anything is merged. The reviewer:
+   - runs the code from a clean checkout and checks it gives the same numbers;
+   - checks the method matches what the report says (weights, parameters, `seed=42`, which component);
+   - reads the interpretation and asks questions now, since the oral will ask them too.
+5. The reviewer approves, the author merges and deletes the branch.
+
+Rules:
+- Nobody commits directly to `main`; `main` always runs end to end.
+- Branch names: `feature/` for required analysis, `explore/` for the exploratory options, `fix/` and `docs/` otherwise.
+- Load data only through `src/build_graph.py`; do not copy loading code into other files.
+- Each task puts its code in its own module `src/<task>.py`. The notebook only calls these functions, which avoids merge conflicts in `.ipynb` files. Only the owner of `feature/analysis-notebook` edits `notebooks/analysis.ipynb`.
+- Figures and tables for the report go in `results/`, named after the task (e.g. `results/resilience_components.png`).
+- Code freeze: **6 November, evening**. After that, only `fix/` and `docs/` branches.
+
+### Tasks and branches
+
+| Branch | Owner | Deliverable |
+| --- | --- | --- |
+| `feature/core-metrics` | Léopold | `src/core_metrics.py`: nodes and edges, graph type, connectivity and components, diameter and radius on the largest component |
+| `feature/centrality` | Léopold | `src/centrality.py`: degree, weighted degree, betweenness, PageRank or closeness; CDG vs Orly / Nice / Lyon table |
+| `feature/analysis-notebook` | Léopold | `notebooks/analysis.ipynb` calling every module, in report order |
+| `feature/communities` | [teammate] | `src/communities.py`: Louvain weighted vs unweighted (`seed=42`), modularity, interpretation of clusters |
+| `feature/resilience` | [teammate] | `src/resilience.py`: remove CDG, CDG + Orly, compared with random removals |
+| `feature/year-comparison` | [teammate] | `src/comparison.py`: same metrics for 2019 / 2020 / 2025 |
+| `feature/figures` | [teammate] | `src/figures.py`: network map, centrality chart, resilience chart, saved to `results/` |
+| `explore/bipartite-projection` | Léopold | Option 2, tested and rejected: projection of French airports via shared foreign destinations |
+| `explore/time-series` | [teammate] | Option 3: edges and nodes per year 1990-2025, with the 3-airline filter caveat |
+| `docs/final-readme` | both | Final README and disclosures, after the code freeze |
+
 ## Disclosures
 
 - **Code reuse**: [state whether any existing code for this dataset was reused, and cite it]
