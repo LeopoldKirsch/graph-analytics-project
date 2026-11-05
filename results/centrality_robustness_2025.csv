@@ -1,0 +1,4 @@
+variant,nodes,edges,cdg_betweenness,top_others,degree_centralization,betweenness_centralization
+full graph,151,289,0.707923046660388,"LFMN 0.14, LFPO 0.14, KLAX 0.06",0.6429977628635347,0.7023839206627324
+without single-route foreign airports,84,222,0.44053170708898687,"LFMN 0.20, LFPO 0.14, LFLL 0.10",0.5518660005877167,0.42879199265991763
+French airports only,31,40,0.06528735632183909,"LFPO 0.16, LFMN 0.13, LFML 0.11",0.19310344827586207,0.14186900200693306
