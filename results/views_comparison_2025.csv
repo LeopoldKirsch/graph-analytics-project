@@ -1,0 +1,24 @@
+,full network,domestic
+nodes,151,31
+edges,289,40
+density,0.025518763796909493,0.08602150537634409
+components,3,8
+isolated_airports,0,6
+lcc_nodes,147,22
+diameter_lcc,6,5
+radius_lcc,3,3
+center_lcc,LFPG,"LFBO, LFPO, LFMN, LFKB"
+avg_shortest_path_lcc,2.6024601621470507,2.484848484848485
+degree_centralization,0.6429977628635347,0.19310344827586207
+betweenness_centralization,0.7023839206627324,0.14186900200693306
+top3_betweenness,"LFPG 0.71, LFMN 0.14, LFPO 0.14","LFPO 0.16, LFMN 0.13, LFML 0.11"
+articulation_points,13,7
+worst_articulation_point,LFPG (cuts off 55),LFPO (cuts off 3)
+CDG_degree,99,5
+CDG_betweenness,0.707923046660388,0.06528735632183909
+CDG_harmonic,0.7944444444444441,0.4027777777777778
+CDG_betweenness_rank,1,5
+Orly_degree,34,6
+Orly_betweenness,0.13803532411835437,0.1628024083196497
+Orly_harmonic,0.5097777777777774,0.4277777777777778
+Orly_betweenness_rank,3,1
