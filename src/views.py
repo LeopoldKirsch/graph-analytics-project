@@ -68,7 +68,7 @@ def view_summary(H: nx.Graph, label: str) -> dict:
         "lcc_nodes": lcc.number_of_nodes(),
         "diameter_lcc": max(ecc.values()),
         "radius_lcc": min(ecc.values()),
-        "center_lcc": ", ".join(nx.center(lcc, e=ecc)),
+        "center_lcc": ", ".join(sorted(nx.center(lcc, e=ecc))),
         "avg_shortest_path_lcc": nx.average_shortest_path_length(lcc),
         **freeman_centralization(H),
         "top3_betweenness": ", ".join(f"{i} {b:.2f}" for i, b in top["betweenness"].items()),

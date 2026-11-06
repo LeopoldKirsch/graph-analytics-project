@@ -84,7 +84,7 @@ def distances(G: nx.Graph) -> dict:
         "lcc_share": lcc.number_of_nodes() / G.number_of_nodes(),
         "diameter": max(ecc.values()),
         "radius": min(ecc.values()),
-        "center": nx.center(lcc, e=ecc),
+        "center": sorted(nx.center(lcc, e=ecc)),
         "periphery_size": len(nx.periphery(lcc, e=ecc)),
         "avg_shortest_path": nx.average_shortest_path_length(lcc),
         "eccentricity": ecc,

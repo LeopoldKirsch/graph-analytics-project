@@ -62,10 +62,15 @@ def centrality_table(G: nx.Graph) -> pd.DataFrame:
         "pagerank": nx.pagerank(G, weight="passengers"),
     })
     df["coverage"] = df["strength"] / df["apt_passengers"]
+    # Equal scores can differ in the last float digits depending on the library
+    # version (e.g. harmonic closeness of airports at the same distances), which
+    # would break ties differently from one machine to the next. Rounding to 12
+    # decimals makes ranks, Spearman correlations and the row order reproducible.
+    df[MEASURES] = df[MEASURES].round(12)
     for m in MEASURES:
         df[f"rank_{m}"] = df[m].rank(ascending=False, method="min").astype(int)
     df.index.name = "icao"
-    return df.sort_values("betweenness", ascending=False)
+    return df.sort_index().sort_values("betweenness", ascending=False, kind="stable")
 
 
 def focus_table(df: pd.DataFrame, extra_top: int = 10) -> pd.DataFrame:

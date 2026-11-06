@@ -114,7 +114,9 @@ def composition(G: nx.Graph, comms: list[set], top: int = 5) -> pd.DataFrame:
         zones = Counter(G.nodes[n]["zone"] for n in c)
         regions = Counter(G.nodes[n]["icao_region"] for n in c)
         strength = {n: G.degree(n, weight="passengers") for n in c}
-        main = sorted(c, key=lambda n: -strength[n])[:top]
+        # ties broken by name / code so the labels do not depend on set order
+        main = sorted(c, key=lambda n: (-strength[n], n))[:top]
+        top_regions = sorted(regions.items(), key=lambda rk: (-rk[1], rk[0]))[:3]
         sub = G.subgraph(c)
         internal_pax = sum(p for _, _, p in sub.edges(data="passengers"))
         rows.append({
@@ -123,7 +125,7 @@ def composition(G: nx.Graph, comms: list[set], top: int = 5) -> pd.DataFrame:
             "metro": zones.get("metro", 0),
             "overseas": zones.get("overseas", 0),
             "foreign": zones.get("foreign", 0),
-            "top_regions": ", ".join(f"{r} ({k})" for r, k in regions.most_common(3)),
+            "top_regions": ", ".join(f"{r} ({k})" for r, k in top_regions),
             "main_airports": ", ".join(f"{G.nodes[n]['name']} [{n}]" for n in main),
             "internal_edges": sub.number_of_edges(),
             "internal_passengers": internal_pax,
