@@ -143,5 +143,5 @@ Rules:
 
 ## Disclosures
 
-- **Code reuse**: [state whether any existing code for this dataset was reused, and cite it]
-- **AI tools**: Claude (Anthropic), through Claude Code, was used as a coding assistant: writing and reviewing analysis code, checking that results reproduce on a clean install, and drafting documentation and parts of the notebook commentary. Commits where it contributed carry a `Co-Authored-By: Claude` line. All numbers in the report come from the code in this repository. [Authors: complete with your own use of AI tools and confirm.]
+- **Code reuse**: No already existing code was reused in this project
+- **AI tools**: Claude (Anthropic), through Claude Code, was used as a coding assistant: debugging reviewing analysis code, checking that results reproduce on a clean install, and drafting documentation and parts of the notebook commentary. Commits where it contributed carry a `Co-Authored-By: Claude` line. All numbers in the report come from the code in this repository.
