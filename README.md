@@ -87,13 +87,13 @@ Requires Python 3.11+. The results in `results/` were produced in a clean virtua
 
 ## Main results (2025)
 
-- **Centralised on CDG**: 99 of 289 routes, 53 % of published passengers, betweenness 0.71 (Nice and Orly: 0.14); the centre of the network. 49 foreign destinations are reachable only through CDG.
-- **International, not domestic**: on French airports only, CDG ranks 5th and Orly is the hub (betweenness centralisation 0.14 vs 0.70 for the full network).
+- **Centralised on CDG**: 99 of 289 routes (2 of them cargo), 53 % of published passengers, betweenness 0.71 (Nice and Orly: 0.14); the centre of the network. 49 foreign destinations are reachable only through CDG.
+- **International, not domestic**: on French airports only, CDG ranks 5th and Orly is the hub (betweenness centralisation 0.14 vs 0.70 for the full network), on a published domestic network that is very incomplete (see limits).
 - **Explained by its number of routes**: in degree-preserving random graphs CDG gets the same betweenness (0.69, p = 0.36); the real network is more disassortative than chance (hub-and-spoke).
 - **Robust yet fragile**: removing CDG leaves 60 % of the airports in the main component and 47 % of the passengers on surviving routes (CDG + Orly: 48 % and 25 %), against 96 % and 99 % for one random removal.
 - **Communities follow markets**: a CDG international group, an Orly-Lyon group (domestic, overseas, Mediterranean), a Nice-regional group, Marseille-Corsica-Maghreb and French Polynesia (modularity 0.36).
-- **Stable over time**: CDG's betweenness stays between 0.69 and 0.82 from 1990 to 2025; COVID raised it in 2020 (0.78), and 2025 is below 2019 (0.71 vs 0.74). Passengers are not fully back (73.6 M vs 78.4 M in 2019).
-- **Limits**: DGAC publication rule (routes with fewer than 3 airlines missing, no foreign-foreign routes), annual undirected graph, static attack order (understates the worst case).
+- **Stable over time**: CDG's betweenness stays between 0.69 (1990) and 0.86 (2002) from 1990 to 2025, above 0.80 in 1998 and most years from 2000 to 2008; COVID raised it in 2020 (0.78), and 2025 is below 2019 (0.71 vs 0.74). Passengers are not fully back (73.6 M vs 78.4 M in 2019).
+- **Limits**: DGAC publication rule (routes with fewer than 3 airlines missing, no foreign-foreign routes); incomplete domestic network (published routes cover 54 % of CDG's traffic, 46 % of Orly's, 21 % of Toulouse's and 17 % of Bordeaux's; only 40 domestic routes, Lyon-CDG, Marseille-Orly and Bordeaux-Orly missing); a few cargo routes with (almost) no passengers (Leipzig, Liège, Cologne, Dubai World Central) counted as routes; annual undirected graph; the main resilience curves use static attack orders (the adaptive betweenness attack in `resilience.py` is more damaging: 3 % of airports left in the main component after 10 removals vs 17 %).
 
 ## Team workflow
 
