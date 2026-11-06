@@ -24,12 +24,13 @@ Source: [Trafic aérien commercial mensuel français](https://www.data.gouv.fr/d
 | `ASP_APT_<year>.csv` | Monthly traffic per airport (departing/arriving passengers, zone) | Node attributes |
 | `ASP_CIE_<year>.csv` | Monthly national traffic per airline (2010-2025, no airport field) | Context only |
 
-External data, used only to draw maps (`src/network_map.py`):
+External data, used to draw maps (`src/network_map.py`) and to check the domestic network (`src/domestic_eurostat.py`):
 
 | File | Source | Licence |
 | --- | --- | --- |
 | `data/external/airport_coords.csv` | Airport positions from [OurAirports](https://ourairports.com/data/), filtered to the 272 airports in the DGAC series; 6 closed airports or city codes placed by hand (column `source`) | Public domain |
 | `data/external/ne_50m_countries.geojson` | Country outlines, [Natural Earth](https://www.naturalearthdata.com) 1:50m | Public domain |
+| `data/external/eurostat_domestic_routes.csv` | French domestic routes, passengers carried, 2019 / 2020 / 2024, from Eurostat dataset [`avia_par_fr`](https://ec.europa.eu/eurostat/databrowser/view/avia_par_fr/default/table) (extracted with `python src/domestic_eurostat.py --fetch`) | CC BY 4.0, source: Eurostat |
 
 Known limitation: the PAP series only publishes routes with at least 10,000 passenger-equivalents in the month, served by at least 3 airlines with none above 85% of the traffic (statistical confidentiality). Routes served by one or two airlines are therefore missing, and only flights touching France are covered.
 
@@ -81,6 +82,7 @@ python src/network_map.py           # maps
 python src/time_series.py           # exploratory: 1990-2025
 python src/passenger_metrics.py     # exploratory: two passenger-loss metrics
 python src/bipartite_projection.py  # explored and rejected
+python src/domestic_eurostat.py     # exploratory: complete domestic network from Eurostat (2019, 2020, 2024)
 ```
 
 Requires Python 3.11+. The results in `results/` were produced in a clean virtual environment from `requirements.txt` with Python 3.12, NetworkX 3.7, pandas 3.1, SciPy and Matplotlib 3.11. Randomised steps use fixed seeds (Louvain `seed=42`, random removals seeds 0-99, null model seed 42), so a rerun gives the same tables. Louvain's implementation can change between NetworkX versions: with an older NetworkX the main partition is the same, but stability scores and small communities can differ slightly. Figures can differ cosmetically (fonts) from one machine to another.
@@ -88,12 +90,12 @@ Requires Python 3.11+. The results in `results/` were produced in a clean virtua
 ## Main results (2025)
 
 - **Centralised on CDG**: 99 of 289 routes (2 of them cargo), 53 % of published passengers, betweenness 0.71 (Nice and Orly: 0.14); the centre of the network. 49 foreign destinations are reachable only through CDG.
-- **International, not domestic**: on French airports only, CDG ranks 5th and Orly is the hub (betweenness centralisation 0.14 vs 0.70 for the full network), on a published domestic network that is very incomplete (see limits).
+- **International, not domestic**: the domestic network is decentralised (betweenness centralisation 0.14 on the published routes, 0.24 on the complete Eurostat network, vs 0.70 for the full network). The published domestic data make Orly look like the only domestic hub, but the complete Eurostat network (2024: 128 routes vs 38 published) shows two Paris hubs: Orly carries the most domestic passengers (8.8 M), CDG has the most domestic routes (19) and the highest betweenness, its regional feeder routes (Toulouse, Bordeaux, Lyon...) being hidden by the DGAC rule.
 - **Explained by its number of routes**: in degree-preserving random graphs CDG gets the same betweenness (0.69, p = 0.36); the real network is more disassortative than chance (hub-and-spoke).
 - **Robust yet fragile**: removing CDG leaves 60 % of the airports in the main component and 47 % of the passengers on surviving routes (CDG + Orly: 48 % and 25 %), against 96 % and 99 % for one random removal.
 - **Communities follow markets**: a CDG international group, an Orly-Lyon group (domestic, overseas, Mediterranean), a Nice-regional group, Marseille-Corsica-Maghreb and French Polynesia (modularity 0.36).
 - **Stable over time**: CDG's betweenness stays between 0.69 (1990) and 0.86 (2002) from 1990 to 2025, above 0.80 in 1998 and most years from 2000 to 2008; COVID raised it in 2020 (0.78), and 2025 is below 2019 (0.71 vs 0.74). Passengers are not fully back (73.6 M vs 78.4 M in 2019).
-- **Limits**: DGAC publication rule (routes with fewer than 3 airlines missing, no foreign-foreign routes); incomplete domestic network (published routes cover 54 % of CDG's traffic, 46 % of Orly's, 21 % of Toulouse's and 17 % of Bordeaux's; only 40 domestic routes, Lyon-CDG, Marseille-Orly and Bordeaux-Orly missing); a few cargo routes with (almost) no passengers (Leipzig, Liège, Cologne, Dubai World Central) counted as routes; annual undirected graph; the main resilience curves use static attack orders (the adaptive betweenness attack in `resilience.py` is more damaging: 3 % of airports left in the main component after 10 removals vs 17 %).
+- **Limits**: DGAC publication rule (routes with fewer than 3 airlines missing, no foreign-foreign routes); incomplete domestic network (published routes cover 54 % of CDG's traffic, 46 % of Orly's, 21 % of Toulouse's and 17 % of Bordeaux's; only 40 domestic routes, single-airline routes such as Lyon-CDG, Toulouse-CDG and Marseille-Orly missing; checked against Eurostat, which has no 2025 data yet); a few cargo routes with (almost) no passengers (Leipzig, Liège, Cologne, Dubai World Central) counted as routes; annual undirected graph; the main resilience curves use static attack orders (the adaptive betweenness attack in `resilience.py` is more damaging: 3 % of airports left in the main component after 10 removals vs 17 %).
 
 ## Team workflow
 
@@ -138,6 +140,7 @@ Rules:
 | `feature/figures` | Léa | `src/figures.py`: network map, centrality chart, resilience chart, saved to `results/` |
 | `explore/bipartite-projection` | Léopold | Option 2, tested and rejected: projection of French airports via shared foreign destinations |
 | `explore/time-series` | Léa | Option 3: edges and nodes per year 1990-2025, with the 3-airline filter caveat |
+| `explore/domestic-eurostat` | Léopold | Exploratory: complete domestic network from Eurostat (no 3-airline rule) vs DGAC published domestic network, 2019 / 2020 / 2024 |
 | `explore/passenger-metrics` | Léopold | Exploratory: passengers lost under airport removal, two definitions side by side (`passengers_kept` = routes still flying, `passengers_connected` = routes in the largest component) |
 | `docs/final-readme` | both | Final README and disclosures, after the code freeze |
 
