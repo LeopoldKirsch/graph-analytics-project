@@ -60,11 +60,40 @@ requirements.txt   Python dependencies
 ## How to reproduce
 
 ```bash
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-jupyter notebook notebooks/analysis.ipynb
+jupyter notebook notebooks/analysis.ipynb      # the whole analysis, in defence order (~2 min)
 ```
 
-Requires Python 3.10+, pandas and NetworkX. Community detection uses Louvain (`networkx.community.louvain_communities`) with `seed=42` for reproducibility.
+Each module can also be run on its own and writes its tables to `results/`:
+
+```bash
+python src/core_metrics.py          # size, connectivity, diameter/radius, articulation points
+python src/centrality.py            # degree, strength, betweenness, harmonic, PageRank
+python src/views.py                 # international vs domestic network
+python src/null_model.py            # degree-preserving null model (500 random graphs, ~45 s)
+python src/resilience.py 2019 2020 2025
+python src/communities.py 2019 2020 2025
+python src/comparison.py            # 2019 / 2020 / 2025
+python src/filter_sensitivity.py    # passenger and seasonality thresholds
+python src/figures.py               # report figures
+python src/network_map.py           # maps
+python src/time_series.py           # exploratory: 1990-2025
+python src/passenger_metrics.py     # exploratory: two passenger-loss metrics
+python src/bipartite_projection.py  # explored and rejected
+```
+
+Requires Python 3.11+. The results in `results/` were produced in a clean virtual environment from `requirements.txt` with Python 3.12, NetworkX 3.7, pandas 3.1, SciPy and Matplotlib 3.11. Randomised steps use fixed seeds (Louvain `seed=42`, random removals seeds 0-99, null model seed 42), so a rerun gives the same tables. Louvain's implementation can change between NetworkX versions: with an older NetworkX the main partition is the same, but stability scores and small communities can differ slightly. Figures can differ cosmetically (fonts) from one machine to another.
+
+## Main results (2025)
+
+- **Centralised on CDG**: 99 of 289 routes, 53 % of published passengers, betweenness 0.71 (Nice and Orly: 0.14); the centre of the network. 49 foreign destinations are reachable only through CDG.
+- **International, not domestic**: on French airports only, CDG ranks 5th and Orly is the hub (betweenness centralisation 0.14 vs 0.70 for the full network).
+- **Explained by its number of routes**: in degree-preserving random graphs CDG gets the same betweenness (0.69, p = 0.36); the real network is more disassortative than chance (hub-and-spoke).
+- **Robust yet fragile**: removing CDG leaves 60 % of the airports in the main component and 47 % of the passengers on surviving routes (CDG + Orly: 48 % and 25 %), against 96 % and 99 % for one random removal.
+- **Communities follow markets**: a CDG international group, an Orly-Lyon group (domestic, overseas, Mediterranean), a Nice-regional group, Marseille-Corsica-Maghreb and French Polynesia (modularity 0.36).
+- **Stable over time**: CDG's betweenness stays between 0.69 and 0.82 from 1990 to 2025; COVID raised it in 2020 (0.78), and 2025 is below 2019 (0.71 vs 0.74). Passengers are not fully back (73.6 M vs 78.4 M in 2019).
+- **Limits**: DGAC publication rule (routes with fewer than 3 airlines missing, no foreign-foreign routes), annual undirected graph, static attack order (understates the worst case).
 
 ## Team workflow
 
@@ -102,6 +131,9 @@ Rules:
 | `feature/communities` | [teammate] | `src/communities.py`: Louvain weighted vs unweighted (`seed=42`), modularity, interpretation of clusters |
 | `feature/resilience` | [teammate] | `src/resilience.py`: remove CDG, CDG + Orly, compared with random removals |
 | `feature/year-comparison` | [teammate] | `src/comparison.py`: same metrics for 2019 / 2020 / 2025 |
+| `feature/network-views` | Léopold | `src/views.py`: international vs domestic network (centrality, resilience, destinations reachable only via CDG) |
+| `feature/null-model` | Léopold | `src/null_model.py`: degree-preserving null model (no foreign-foreign swaps) |
+| `feature/filter-sensitivity` | Léopold | `src/filter_sensitivity.py`: results under passenger and seasonality thresholds |
 | `feature/network-map` | Léopold | `src/network_map.py`: world map of the full network and map of French airports only, for the report and the defence |
 | `feature/figures` | [teammate] | `src/figures.py`: network map, centrality chart, resilience chart, saved to `results/` |
 | `explore/bipartite-projection` | Léopold | Option 2, tested and rejected: projection of French airports via shared foreign destinations |
@@ -112,4 +144,4 @@ Rules:
 ## Disclosures
 
 - **Code reuse**: [state whether any existing code for this dataset was reused, and cite it]
-- **AI tools**: [state whether AI tools were used and for what purpose]
+- **AI tools**: Claude (Anthropic), through Claude Code, was used as a coding assistant: writing and reviewing analysis code, checking that results reproduce on a clean install, and drafting documentation and parts of the notebook commentary. Commits where it contributed carry a `Co-Authored-By: Claude` line. All numbers in the report come from the code in this repository. [Authors: complete with your own use of AI tools and confirm.]
