@@ -24,6 +24,13 @@ Source: [Trafic aérien commercial mensuel français](https://www.data.gouv.fr/d
 | `ASP_APT_<year>.csv` | Monthly traffic per airport (departing/arriving passengers, zone) | Node attributes |
 | `ASP_CIE_<year>.csv` | Monthly national traffic per airline (2010-2025, no airport field) | Context only |
 
+External data, used only to draw maps (`src/network_map.py`):
+
+| File | Source | Licence |
+| --- | --- | --- |
+| `data/external/airport_coords.csv` | Airport positions from [OurAirports](https://ourairports.com/data/), filtered to the 272 airports in the DGAC series; 6 closed airports or city codes placed by hand (column `source`) | Public domain |
+| `data/external/ne_50m_countries.geojson` | Country outlines, [Natural Earth](https://www.naturalearthdata.com) 1:50m | Public domain |
+
 Known limitation: the PAP series only publishes routes with at least 10,000 passenger-equivalents in the month, served by at least 3 airlines with none above 85% of the traffic (statistical confidentiality). Routes served by one or two airlines are therefore missing, and only flights touching France are covered.
 
 ## Graph model
@@ -42,6 +49,7 @@ Weight convention: use `weight="passengers"` for strength-type measures (weighte
 data/raw/pap/      DGAC airport-pair series, one CSV per year (1990-2025)
 data/raw/apt/      DGAC airport series, one CSV per year (1990-2025)
 data/raw/cie/      DGAC airline series, one CSV per year (2010-2025), context only
+data/external/     airport coordinates and country outlines, for maps only
 src/build_graph.py builds one graph per year (python src/build_graph.py 2019 2020 2025)
 src/               graph building and analysis scripts
 notebooks/         main analysis notebook
@@ -94,6 +102,7 @@ Rules:
 | `feature/communities` | [teammate] | `src/communities.py`: Louvain weighted vs unweighted (`seed=42`), modularity, interpretation of clusters |
 | `feature/resilience` | [teammate] | `src/resilience.py`: remove CDG, CDG + Orly, compared with random removals |
 | `feature/year-comparison` | [teammate] | `src/comparison.py`: same metrics for 2019 / 2020 / 2025 |
+| `feature/network-map` | Léopold | `src/network_map.py`: world map of the full network and map of French airports only, for the report and the defence |
 | `feature/figures` | [teammate] | `src/figures.py`: network map, centrality chart, resilience chart, saved to `results/` |
 | `explore/bipartite-projection` | Léopold | Option 2, tested and rejected: projection of French airports via shared foreign destinations |
 | `explore/time-series` | [teammate] | Option 3: edges and nodes per year 1990-2025, with the 3-airline filter caveat |
