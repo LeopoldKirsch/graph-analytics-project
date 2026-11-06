@@ -97,6 +97,7 @@ Rules:
 | `feature/figures` | [teammate] | `src/figures.py`: network map, centrality chart, resilience chart, saved to `results/` |
 | `explore/bipartite-projection` | Léopold | Option 2, tested and rejected: projection of French airports via shared foreign destinations |
 | `explore/time-series` | [teammate] | Option 3: edges and nodes per year 1990-2025, with the 3-airline filter caveat |
+| `explore/passenger-metrics` | Léopold | Exploratory: passengers lost under airport removal, two definitions side by side (`passengers_kept` = routes still flying, `passengers_connected` = routes in the largest component) |
 | `docs/final-readme` | both | Final README and disclosures, after the code freeze |
 
 ## Disclosures
