@@ -16,6 +16,9 @@ Method: airports (nodes) are removed and the remaining graph is measured.
      - random order (mean and 5-95 % band over ``N_RANDOM`` seeds).
    The targeted orders are computed once on the intact graph (static attack),
    which is the standard simple version and easy to reproduce.
+   For comparison, an adaptive attack recomputes betweenness after every
+   removal and always removes the currently most central airport
+   ("betweenness_adaptive"); it is the more damaging, worst-case version.
 
 Measures after each removal (all on the remaining graph):
 - size of the largest connected component (LCC), in nodes and as a share of
@@ -156,6 +159,21 @@ def removal_curve(G: nx.Graph, order: list, max_removed: int = MAX_REMOVED,
     return pd.DataFrame(rows)
 
 
+def adaptive_order(G: nx.Graph, max_removed: int = MAX_REMOVED) -> list:
+    """Adaptive betweenness attack: recompute betweenness after each removal.
+
+    Ties are broken by degree in the current graph, then by code, so the order
+    is reproducible."""
+    H = G.copy()
+    order = []
+    for _ in range(min(max_removed, H.number_of_nodes())):
+        bc = nx.betweenness_centrality(H)  # unweighted hops
+        target = min(H, key=lambda n: (-bc[n], -H.degree(n), n))
+        order.append(target)
+        H.remove_node(target)
+    return order
+
+
 def curves(G: nx.Graph, n_random: int = N_RANDOM, max_removed: int = MAX_REMOVED) -> pd.DataFrame:
     """Removal curves for the targeted strategies and the random baseline."""
     parts = []
@@ -163,6 +181,9 @@ def curves(G: nx.Graph, n_random: int = N_RANDOM, max_removed: int = MAX_REMOVED
         c = removal_curve(G, attack_order(G, strategy), max_removed)
         c.insert(0, "strategy", strategy)
         parts.append(c)
+    c = removal_curve(G, adaptive_order(G, max_removed), max_removed)
+    c.insert(0, "strategy", "betweenness_adaptive")
+    parts.append(c)
 
     rand = pd.concat(
         [removal_curve(G, attack_order(G, "random", s), max_removed, diameter=False).assign(seed=s)
