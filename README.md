@@ -3,7 +3,7 @@
 **How centralised is France's air connectivity on Paris-CDG, and how fragile does that make the network?**
 
 Graph analytics course project, Albert School (2026).
-Authors: Léopold Kirsch, [teammate name]
+Authors: Léopold Kirsch, Léa Chapoton
 
 ## Overview
 
@@ -128,16 +128,16 @@ Rules:
 | `feature/core-metrics` | Léopold | `src/core_metrics.py`: nodes and edges, graph type, connectivity and components, diameter and radius on the largest component |
 | `feature/centrality` | Léopold | `src/centrality.py`: degree, weighted degree, betweenness, PageRank or closeness; CDG vs Orly / Nice / Lyon table |
 | `feature/analysis-notebook` | Léopold | `notebooks/analysis.ipynb` calling every module, in report order |
-| `feature/communities` | [teammate] | `src/communities.py`: Louvain weighted vs unweighted (`seed=42`), modularity, interpretation of clusters |
-| `feature/resilience` | [teammate] | `src/resilience.py`: remove CDG, CDG + Orly, compared with random removals |
-| `feature/year-comparison` | [teammate] | `src/comparison.py`: same metrics for 2019 / 2020 / 2025 |
+| `feature/communities` | Léa | `src/communities.py`: Louvain weighted vs unweighted (`seed=42`), modularity, interpretation of clusters |
+| `feature/resilience` | Léa | `src/resilience.py`: remove CDG, CDG + Orly, compared with random removals |
+| `feature/year-comparison` | Léa | `src/comparison.py`: same metrics for 2019 / 2020 / 2025 |
 | `feature/network-views` | Léopold | `src/views.py`: international vs domestic network (centrality, resilience, destinations reachable only via CDG) |
 | `feature/null-model` | Léopold | `src/null_model.py`: degree-preserving null model (no foreign-foreign swaps) |
 | `feature/filter-sensitivity` | Léopold | `src/filter_sensitivity.py`: results under passenger and seasonality thresholds |
 | `feature/network-map` | Léopold | `src/network_map.py`: world map of the full network and map of French airports only, for the report and the defence |
-| `feature/figures` | [teammate] | `src/figures.py`: network map, centrality chart, resilience chart, saved to `results/` |
+| `feature/figures` | Léa | `src/figures.py`: network map, centrality chart, resilience chart, saved to `results/` |
 | `explore/bipartite-projection` | Léopold | Option 2, tested and rejected: projection of French airports via shared foreign destinations |
-| `explore/time-series` | [teammate] | Option 3: edges and nodes per year 1990-2025, with the 3-airline filter caveat |
+| `explore/time-series` | Léa | Option 3: edges and nodes per year 1990-2025, with the 3-airline filter caveat |
 | `explore/passenger-metrics` | Léopold | Exploratory: passengers lost under airport removal, two definitions side by side (`passengers_kept` = routes still flying, `passengers_connected` = routes in the largest component) |
 | `docs/final-readme` | both | Final README and disclosures, after the code freeze |
 
