@@ -69,6 +69,14 @@ def constrained_swaps(G: nx.Graph, rng: random.Random, swaps_per_edge: int = 10)
     return R
 
 
+def canonical(G: nx.Graph) -> nx.Graph:
+    """Copy of G with nodes and edges inserted in sorted order (reproducible iteration)."""
+    H = nx.Graph()
+    H.add_nodes_from(sorted(G.nodes(data=True)))
+    H.add_edges_from(sorted((min(u, v), max(u, v), d) for u, v, d in G.edges(data=True)))
+    return H
+
+
 def hub_density(G: nx.Graph, k: int = 10) -> float:
     """Density among the k airports with the most routes (the hubs).
 
@@ -154,6 +162,10 @@ def run(year: int = 2025, n: int = 500):
     G = build_graph(year)
     F = G.subgraph([v for v, f in G.nodes(data="french") if f]).copy()
     F.remove_nodes_from(list(nx.isolates(F)))  # isolated airports cannot be rewired
+    # subgraph() iterates over a set of node codes, whose order changes with
+    # Python's string hashing from one run to the next; rebuild F in sorted
+    # order so the swaps and Louvain see the same graph every time.
+    F = canonical(F)
     tables, nulls = zip(*(compare(H, n, label) for H, label in
                           ((G, "full network"), (F, "domestic"))))
     return pd.concat(tables, ignore_index=True), pd.concat(nulls, ignore_index=True)

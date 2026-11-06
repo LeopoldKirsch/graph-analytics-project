@@ -56,7 +56,9 @@ def french_side(B: nx.Graph) -> set[str]:
 
 def project(B: nx.Graph, method: str = "shared") -> nx.Graph:
     """Project B onto French airports. method: "shared" or "jaccard"."""
-    top = french_side(B)
+    # sorted: a set of codes iterates in a different order on each run (string
+    # hashing), which changes the projection's node order and hence Louvain
+    top = sorted(french_side(B))
     if method == "shared":
         P = bipartite.weighted_projected_graph(B, top)
     elif method == "jaccard":
@@ -65,13 +67,16 @@ def project(B: nx.Graph, method: str = "shared") -> nx.Graph:
         raise ValueError(f"unknown method {method!r}")
     for n in P:
         P.nodes[n]["foreign_destinations"] = B.degree(n)
-    return P
+    C = nx.Graph()  # same graph, nodes and edges in sorted order
+    C.add_nodes_from(sorted(P.nodes(data=True)))
+    C.add_edges_from(sorted((min(u, v), max(u, v), d) for u, v, d in P.edges(data=True)))
+    return C
 
 
 def evaluate(P: nx.Graph, label: str = "") -> dict:
     """Size, density, components, Louvain communities and modularity of P."""
     comms = louvain_communities(P, weight="weight", seed=SEED)
-    comms = sorted(comms, key=len, reverse=True)
+    comms = sorted(comms, key=lambda c: (-len(c), sorted(c)[0]))
     return {
         "variant": label,
         "nodes": P.number_of_nodes(),
