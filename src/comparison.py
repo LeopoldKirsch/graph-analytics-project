@@ -16,9 +16,8 @@ year, so differences come from the data, not from the method:
 - resilience: LCC share and passengers kept once CDG is removed (resilience.py);
 - route turnover between years: routes kept, lost and gained, Jaccard index.
 
-The core metrics are computed here with plain NetworkX calls. When
-src/core_metrics.py (feature/core-metrics) is merged, ``size_and_connectivity``
-can call it instead so that both parts of the report use exactly one function.
+The size, connectivity and distance measures come from src/core_metrics.py,
+so this comparison and the 2025 core metrics use exactly the same functions.
 
 Caveat: a route only appears when it passes the DGAC publication rule
 (>= 10,000 passenger-equivalents in the month, >= 3 airlines, none above 85 %).
@@ -38,6 +37,7 @@ import networkx as nx
 import pandas as pd
 
 from build_graph import build_graphs
+from core_metrics import distances, size_and_type
 from communities import louvain, modularity
 from resilience import evaluate
 
@@ -48,19 +48,20 @@ HUBS = {"LFPG": "CDG", "LFPO": "Orly", "LFMN": "Nice", "LFLL": "Lyon"}
 
 
 def size_and_connectivity(G: nx.Graph) -> dict:
-    lcc = G.subgraph(max(nx.connected_components(G), key=len))
+    """Size and connectivity, from core_metrics (distances on the LCC, in hops)."""
+    size, dist = size_and_type(G), distances(G)
     return {
-        "nodes": G.number_of_nodes(),
-        "french_nodes": sum(1 for _, f in G.nodes(data="french") if f),
-        "edges": G.number_of_edges(),
-        "density": nx.density(G),
-        "mean_degree": 2 * G.number_of_edges() / G.number_of_nodes(),
+        "nodes": size["nodes"],
+        "french_nodes": size["nodes_french_metro"] + size["nodes_french_overseas"],
+        "edges": size["edges"],
+        "density": size["density"],
+        "mean_degree": size["degree_mean"],
         "passengers_m": sum(p for _, _, p in G.edges(data="passengers")) / 1e6,
         "components": nx.number_connected_components(G),
-        "lcc_nodes": lcc.number_of_nodes(),
-        "lcc_diameter": nx.diameter(lcc),
-        "lcc_radius": nx.radius(lcc),
-        "lcc_avg_path": nx.average_shortest_path_length(lcc),
+        "lcc_nodes": dist["lcc_nodes"],
+        "lcc_diameter": dist["diameter"],
+        "lcc_radius": dist["radius"],
+        "lcc_avg_path": dist["avg_shortest_path"],
     }
 
 
